@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://mdbcdn.b-cdn.net/wp-content/themes/mdbootstrap4/docs-app/css/compiled-4.20.0.min.css">    <title>Home</title>
+    <link href="https://fonts.googleapis.com/css?family=Handlee&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <form action="index" th:object="${arquivoUpload}" enctype="multipart/form-data" method="post">
+        <div class="d-flex justify-content-center">
+            <h1>IMPORTAR TRANSAÇÕES</h1>
+        </div>
+
+        <div>
+            <input class="form-control form-control-lg" id="file" name="file" type="file">
+        </div>
+        <div>
+            <span class="w-25 p-3 text-muted mt-2">Selecione o arquivo para realizar o upload</span>
+        </div>
+        <button type="submit" value="Submit" class="mt-3 btn btn-primary">Importar</button>
+    </form>
+    <hr class="my-4">
+    <div class="d-flex justify-content-center">
+        <h2>IMPORTAÇÕES REALIZADAS</h2>
+    </div>
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col"><b>DATA TRANSAÇÕES</b></th>
+                <th scope="col"><b>DATA IMPORTAÇÃO</b></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="arquivo : ${arquivoUpload}">
+                <td th:text="${arquivo.dataTransacoes}"></td>
+                <td th:text="${arquivo.dataImportacao}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
