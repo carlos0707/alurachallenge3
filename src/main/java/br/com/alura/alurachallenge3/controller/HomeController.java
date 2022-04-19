@@ -6,7 +6,6 @@ import br.com.alura.alurachallenge3.repository.ArquivoUploadRepository;
 import br.com.alura.alurachallenge3.repository.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 public class HomeController {
@@ -38,9 +36,13 @@ public class HomeController {
 
     private LocalDate dataDaTransacao;
 
-    @GetMapping("/index")
-    public String home(){
-        return "home";
+    @RequestMapping(method = RequestMethod.GET, value = "/index")
+    public ModelAndView home(){
+
+        ModelAndView andView = new ModelAndView("home");
+        andView.addObject("arquivoUpload", arquivoUploadRepository.findAll());
+
+        return andView;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/index", consumes = {"multipart/form-data"})
@@ -48,48 +50,67 @@ public class HomeController {
 
         InputStream inputStream = file.getInputStream();
 
-        new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-                .lines()
-                .forEach(t -> {
-                    Transacao transacao = this.tratarDados(t);
-                    transacaoRepository.save(transacao);
-                });
-
-        arquivoUpload.setDataTransacoes(this.dataDaTransacao);
-        arquivoUpload.setDataImportacao(LocalDate.now());
-
         ModelAndView andView = new ModelAndView("home");
 
-        arquivoUploadRepository.save(arquivoUpload);
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
-        andView.addObject("arquivoUpload", arquivoUploadRepository.findAll());
+        try {
+            if (file.getSize() > 0) {
+                for (String line = br.readLine(); line != null; line = br.readLine()) {
 
-        return andView;
-    }
+                    String[] arrayTratamento = line.split(",");
+                    String[] dataTratamento = arrayTratamento[7].split("T");
 
-    private Transacao tratarDados(String linha){
+                    Transacao transacao = new Transacao();
 
-        String[] arrayTratamento = linha.split(",");
+                    if (arrayTratamento.length != 8) {
+                        continue;
+                    }
 
-        String [] dataTratamento = arrayTratamento[7].split("T");
+                    if(this.dataDaTransacao != null && LocalDate.parse(dataTratamento[0], formatter) != this.dataDaTransacao){
+                        continue;
+                    }
 
-        Transacao transacao = new Transacao();
+                    LocalDate data = LocalDate.parse(dataTratamento[0]);
 
-        transacao.setBancoOrigem(arrayTratamento[0]);
-        transacao.setAgenciaOrigem(arrayTratamento[1]);
-        transacao.setContaOrigem(arrayTratamento[2]);
-        transacao.setBancoDestino(arrayTratamento[3]);
-        transacao.setAgenciaDestino(arrayTratamento[4]);
-        transacao.setContaDestino(arrayTratamento[5]);
-        transacao.setValor(new BigDecimal(arrayTratamento[6]));
-        transacao.setDataTransacao(LocalDate.parse(dataTratamento[0], formatter));
-        transacao.setHoraTransacao(dataTratamento[1]);
+                    if (arquivoUploadRepository.findByDataTransacao(data).size() > 0) {
 
-        this.dataDaTransacao = transacao.getDataTransacao();
+                        andView.addObject("msg", "Data de transação já foi realizada");
+                        throw new Exception("Data de transação já foi realizada");
+                    }
 
-        this.transacoes.add(transacao);
+                    transacao.setBancoOrigem(arrayTratamento[0]);
+                    transacao.setAgenciaOrigem(arrayTratamento[1]);
+                    transacao.setContaOrigem(arrayTratamento[2]);
+                    transacao.setBancoDestino(arrayTratamento[3]);
+                    transacao.setAgenciaDestino(arrayTratamento[4]);
+                    transacao.setContaDestino(arrayTratamento[5]);
+                    transacao.setValor(new BigDecimal(arrayTratamento[6]));
+                    transacao.setDataTransacao(LocalDate.parse(dataTratamento[0], formatter));
+                    transacao.setHoraTransacao(dataTratamento[1]);
 
-        return transacao;
-    }
+                    this.transacoes.add(transacao);
+
+                    this.dataDaTransacao = this.transacoes.get(0).getDataTransacao();
+
+                    transacaoRepository.save(transacao);
+
+                }
+
+                arquivoUpload.setDataTransacoes(this.dataDaTransacao);
+                arquivoUpload.setDataImportacao(LocalDate.now());
+
+                arquivoUploadRepository.save(arquivoUpload);
+
+                andView.addObject("arquivoUpload", arquivoUploadRepository.findAll());
+            } else {
+                andView.addObject("msg", "Arquivo não pode ser vazio!");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    return andView;
+}
 
 }

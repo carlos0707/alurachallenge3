@@ -35,4 +35,13 @@ public class ArquivoUpload {
     public Long getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "ArquivoUpload{" +
+                "id=" + id +
+                ", dataImportacao=" + dataImportacao +
+                ", dataTransacoes=" + dataTransacoes +
+                '}';
+    }
 }
