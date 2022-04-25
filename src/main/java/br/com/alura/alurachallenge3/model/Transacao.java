@@ -1,9 +1,6 @@
 package br.com.alura.alurachallenge3.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -23,6 +20,10 @@ public class Transacao {
     private BigDecimal valor;
     private LocalDate dataTransacao;
     private String horaTransacao;
+
+    @JoinColumn(name = "arquivo_id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    private ArquivoUpload arquivoUpload;
 
     public String getBancoOrigem() {
         return bancoOrigem;
@@ -98,6 +99,18 @@ public class Transacao {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public ArquivoUpload getArquivoUpload() {
+        return arquivoUpload;
+    }
+
+    public void setArquivoUpload(ArquivoUpload arquivoUpload) {
+        this.arquivoUpload = arquivoUpload;
     }
 
     @Override

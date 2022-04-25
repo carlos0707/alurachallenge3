@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Handlee&display=swap" rel="stylesheet">
+</head>
+<body>
+    <form th:action="@{/login}" class="card-body" method="post">
+        <div class="form-group">
+            <div class="d-flex justify-content-center">
+                <h1>SISTEMA DE ANÁLISE DE TRANSAÇÕES FINANCEIRAS</h1>
+            </div>
+            <label for="username">Email</label>
+            <input name="username" id="username" type="email" class="form-control mt-2" aria-describedby="emailHelp" placeholder="Email do usuário">
+        </div>
+            <label for="password">Senha</label>
+            <input name="password" id="password" type="password" class="form-control mt-2" aria-describedby="emailHelp" placeholder="Senha do usuário">
+            <div class="form-group">
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Login</button>
+    </form>
+</body>
+</html>

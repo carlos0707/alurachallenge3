@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista dos Usuários</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Handlee&display=swap" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{base :: menu}"></div>
+<div class="d-flex justify-content-center">
+  <h2>USUÁRIOS CADASTRADOS</h2>
+</div>
+<td><a href="/usuario/cadastrarusuario" role="button" class="btn btn-primary">Novo</a></td>
+<div>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col"><b>ID</b></th>
+      <th scope="col"><b>NOME</b></th>
+      <th scope="col"><b>EMAIL</b></th>
+      <th scope="col"><b>OPÇÕES</b></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="usuario : ${usuariosobj}">
+      <td th:text="${usuario.id}"></td>
+      <td th:text="${usuario.nome}"></td>
+      <td th:text="${usuario.email}"></td>
+      <td><a th:href="@{/editarusuario/{idusuario}(idusuario=${usuario.id})}" role="button" class="btn btn-info">Editar</a>
+        <a th:href="@{/deletarusuario/{idusuario}(idusuario=${usuario.id})}" role="button" class="btn btn-danger">Excluir</a>
+      </td>
+
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div class="mt-4">
+  <span th:if="${msg != null}" class="alert alert-danger" role="alert" th:text="${msg}"></span>
+</div>
+
+</body>
+</html>
